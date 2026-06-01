@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Pinder - Matches</title>
+      <link rel="stylesheet" href="css/base.css" />
+      <link rel="stylesheet" href="css/matches.css" />
+      <script src="js/store.js" defer></script>
+      <script src="js/api.js" defer></script>
+      <script src="js/matches.js" defer></script>
+  </head>
+
+  <body class="auth-guard">
+    <div id="view-matches" class="view-panel">
+        <header class="app-header">
+            <div style="width:36px"></div>
+            <div class="header-logo">Pinder</div>
+            <div style="width:36px"></div>
+        </header>
+
+        <div class="matches-body">
+            <div class="matches-header">
+                <h2>Matches</h2>
+                <span class="match-count" id="match-count">0 matches</span>
+            </div>
+
+            <div class="matches-list" id="matches-list"></div>
+
+            <div class="empty-state hidden" id="empty-matches">
+                <h3>No matches yet</h3>
+                <p>Keep swiping to find your pet's perfect friend!</p>
+                <button class="btn-primary" onclick="goDiscover()">Start Swiping</button>
+            </div>
+        </div>
+
+        <nav class="bottom-nav">
+            <button class="nav-btn" onclick="goDiscover()">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                <span>Discover</span>
+            </button>
+            <button class="nav-btn active">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                <span>Matches</span>
+            </button>
+            <button class="nav-btn" onclick="window.location.href='profile.html'">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+                <span>Profile</span>
+            </button>
+        </nav>
+    </div>
+
+    <div id="view-chat" class="view-panel">
+        <div class="chat-header">
+            <button class="icon-btn" onclick="backToMatches()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <div class="chat-header-info">
+                <div class="chat-header-avatar" id="chat-header-avatar"></div>
+                <div>
+                    <div class="chat-header-name" id="chat-header-name"></div>
+                    <div class="chat-header-sub" id="chat-header-sub"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-messages" id="chat-messages"></div>
+
+        <div class="chat-input-bar">
+            <input type="text" id="chat-input" placeholder="Say something..." onkeydown="chatKeydown(event)" />
+            <button class="send-btn" onclick="sendMessage()">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+            </button>
+        </div>
+    </div>
+  </body>
+</html>

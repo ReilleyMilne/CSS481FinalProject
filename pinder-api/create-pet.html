@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Pinder - Create Pet Profile</title>
+      <link rel="stylesheet" href="css/base.css" />
+      <link rel="stylesheet" href="css/create-pet.css" />
+      <script src="js/store.js" defer></script>
+      <script src="js/api.js" defer></script>
+      <script src="js/create-pet.js" defer></script>
+  </head>
+
+  <body class="auth-guard">
+    <div class="onboard-header">
+        <button class="btn-ghost" onclick="skipPetCreation()">Skip for now</button>
+        <div class="step-dots">
+            <span class="dot active" id="dot-1"></span>
+            <span class="dot" id="dot-2"></span>
+            <span class="dot" id="dot-3"></span>
+        </div>
+    </div>
+
+    <div id="step-1" class="onboard-step active">
+        <div class="onboard-hero">
+            <div class="hero-emoji"></div>
+        </div>
+        <div class="onboard-content">
+            <h2>Tell us about your pet</h2>
+            <div id="create-error" class="error-msg hidden"></div>
+
+            <div class="field-row">
+                <div class="field-group flex-1">
+                    <label for="pet-name">Pet's Name *</label>
+                    <input type="text" id="pet-name" placeholder="Buddy" />
+                </div>
+                <div class="field-group w-110">
+                    <label for="pet-age">Age (yrs) *</label>
+                    <input type="number" id="pet-age" placeholder="3" min="0" max="50" required />
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group flex-1">
+                    <label for="pet-species">Species *</label>
+                    <input type="text" id="pet-species" placeholder="Dog" />
+                </div>
+                <div class="field-group flex-1">
+                    <label for="pet-breed">Breed</label>
+                    <input type="text" id="pet-breed" placeholder="Golden Retriever" />
+                </div>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group w-110">
+                    <label for="pet-weight">Weight (lbs) *</label>
+                    <input type="number" id="pet-weight" placeholder="65" min="0" />
+                </div>
+                <div class="field-group flex-1">
+                    <label>Gender</label>
+                    <div class="toggle-group" id="gender-group">
+                        <button class="toggle-btn active" data-value="male">Male</button>
+                        <button class="toggle-btn" data-value="female">Female</button>
+                        <button class="toggle-btn" data-value="other">Other</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label for="pet-image-url">Profile Photo URL (optional)</label>
+                <input type="url" id="pet-image-url" placeholder="https://example.com/photo.jpg" />
+            </div>
+
+            <button class="btn-primary" onclick="changeStep(2)">Continue</button>
+        </div>
+    </div>
+
+    <div id="step-2" class="onboard-step">
+        <div class="onboard-content onboard-content-full">
+            <h2>What's their vibe?</h2>
+
+            <div class="field-group">
+                <label for="pet-bio">Bio (optional)</label>
+                <textarea id="pet-bio" placeholder="Hi! I'm an energetic pup who loves fetch..." rows="3"></textarea>
+            </div>
+
+            <div class="field-row">
+                <div class="field-group flex-1">
+                    <label for="pet-fav-activity">Favorite Activity</label>
+                    <input type="text" id="pet-fav-activity" placeholder="Fetch, hiking..." />
+                </div>
+                <div class="field-group flex-1">
+                    <label for="pet-fav-food">Favorite Food</label>
+                    <input type="text" id="pet-fav-food" placeholder="Treats, chicken..." />
+                </div>
+            </div>
+
+            <div class="field-group">
+                <label>Personality Traits (pick up to 4)</label>
+                <div class="chip-grid" id="trait-chips">
+                    <button class="chip" data-trait="Playful">Playful</button>
+                    <button class="chip" data-trait="Calm">Calm</button>
+                    <button class="chip" data-trait="Energetic">Energetic</button>
+                    <button class="chip" data-trait="Friendly">Friendly</button>
+                    <button class="chip" data-trait="Lazy">Lazy</button>
+                    <button class="chip" data-trait="Foodie">Foodie</button>
+                    <button class="chip" data-trait="Water lover">Water lover</button>
+                    <button class="chip" data-trait="Athletic">Athletic</button>
+                    <button class="chip" data-trait="Dramatic">Dramatic</button>
+                    <button class="chip" data-trait="Cuddly">Cuddly</button>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-ghost" onclick="changeStep(1)">Back</button>
+                <button class="btn-primary" onclick="changeStep(3)">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="step-3" class="onboard-step">
+        <div class="onboard-content onboard-content-full">
+            <h2>Looking good!</h2>
+            <p style="color:var(--text-muted);font-size:14px;margin-bottom:20px">Review your pet's profile before saving.</p>
+
+            <div class="confirm-card">
+                <div class="confirm-avatar"></div>
+                <div>
+                    <div class="confirm-name" id="confirm-name">-</div>
+                    <div class="confirm-meta" id="confirm-meta"></div>
+                    <div class="confirm-traits" id="confirm-traits"></div>
+                </div>
+            </div>
+
+            <div class="btn-row">
+                <button class="btn-ghost" onclick="changeStep(2)">Back</button>
+                <button id="save-btn" class="btn-primary" onclick="savePetProfile()">Create Profile</button>
+            </div>
+        </div>
+    </div>
+  </body>
+</html>

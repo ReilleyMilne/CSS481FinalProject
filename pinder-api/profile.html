@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Pinder - Profile</title>
+      <link rel="stylesheet" href="css/base.css" />
+      <link rel="stylesheet" href="css/profile.css" />
+      <script src="js/store.js" defer></script>
+      <script src="js/api.js" defer></script>
+      <script src="js/profile.js" defer></script>
+  </head>
+
+  <body class="auth-guard">
+    <header class="app-header">
+        <div style="width:36px"></div>
+        <div class="header-logo">Pinder</div>
+        <button class="icon-btn" onclick="toggleEdit()" title="Edit profile">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+        </button>
+    </header>
+
+    <div class="profile-body">
+        <div class="profile-hero">
+            <div class="profile-avatar" id="profile-emoji"></div>
+            <div class="profile-hero-name" id="profile-name">Loading...</div>
+            <div class="profile-hero-breed" id="profile-breed"></div>
+        </div>
+
+        <div class="profile-content">
+            <div id="profile-error" class="error-msg hidden"></div>
+
+            <div id="view-mode">
+                <div class="profile-section">
+                    <div class="profile-section-title">Details</div>
+                    <div class="profile-field">
+                        <span class="profile-field-label">Age</span>
+                        <span class="profile-field-value" id="profile-meta">-</span>
+                    </div>
+                    <div class="profile-field">
+                        <span class="profile-field-label">Activity</span>
+                        <span class="profile-field-value" id="profile-activity">-</span>
+                    </div>
+                    <div class="profile-field">
+                        <span class="profile-field-label">Food</span>
+                        <span class="profile-field-value" id="profile-food">-</span>
+                    </div>
+                    <div class="profile-field">
+                        <span class="profile-field-label">Trait</span>
+                        <span class="profile-field-value" id="profile-trait">-</span>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <div class="profile-section-title">Bio</div>
+                    <p class="profile-bio" id="profile-bio"></p>
+                </div>
+
+                <div class="profile-section">
+                    <div class="profile-section-title">Tags</div>
+                    <div class="profile-tags" id="profile-tags"></div>
+                    <div class="add-row" style="margin-top:12px">
+                        <div class="field-group" style="margin:0;flex:1">
+                            <input type="text" id="new-tag-input" placeholder="Add a tag..." />
+                        </div>
+                        <button class="btn-secondary" onclick="addTag()">Add</button>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <div class="profile-section-title">Photos</div>
+                    <div class="profile-images-grid" id="profile-images"></div>
+                    <div class="add-row">
+                        <div class="field-group" style="margin:0;flex:1">
+                            <input type="url" id="new-image-url" placeholder="Paste image URL..." />
+                        </div>
+                        <button class="btn-secondary" onclick="addImage()">Add</button>
+                    </div>
+                </div>
+
+                <div class="profile-section">
+                    <button class="logout-btn" onclick="logoutUser()">Sign Out</button>
+                </div>
+            </div>
+
+            <div id="edit-mode" class="hidden">
+                <h2>Edit Profile</h2>
+
+                <div class="field-row">
+                    <div class="field-group flex-1">
+                        <label for="edit-name">Name</label>
+                        <input type="text" id="edit-name" />
+                    </div>
+                    <div class="field-group flex-1">
+                        <label for="edit-species">Species</label>
+                        <input type="text" id="edit-species" />
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field-group flex-1">
+                        <label for="edit-breed">Breed</label>
+                        <input type="text" id="edit-breed" />
+                    </div>
+                    <div class="field-group w-110">
+                        <label for="edit-age">Age (yrs)</label>
+                        <input type="number" id="edit-age" min="0" max="30" />
+                    </div>
+                </div>
+
+                <div class="field-row">
+                    <div class="field-group w-110">
+                        <label for="edit-weight">Weight (lbs)</label>
+                        <input type="number" id="edit-weight" min="0" />
+                    </div>
+                    <div class="field-group flex-1">
+                        <label for="edit-gender">Gender</label>
+                        <select id="edit-gender">
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="edit-bio">Bio</label>
+                    <textarea id="edit-bio" rows="3"></textarea>
+                </div>
+
+                <div class="field-row">
+                    <div class="field-group flex-1">
+                        <label for="edit-activity">Favorite Activity</label>
+                        <input type="text" id="edit-activity" />
+                    </div>
+                    <div class="field-group flex-1">
+                        <label for="edit-food">Favorite Food</label>
+                        <input type="text" id="edit-food" />
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label for="edit-trait">Personality Trait</label>
+                    <input type="text" id="edit-trait" />
+                </div>
+
+                <div class="btn-row">
+                    <button class="btn-ghost" onclick="toggleEdit()">Cancel</button>
+                    <button id="save-edit-btn" class="btn-primary" onclick="saveEdit()">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-btn" onclick="goDiscover()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Discover</span>
+        </button>
+        <button class="nav-btn" onclick="goMatches()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span>Matches</span>
+        </button>
+        <button class="nav-btn active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <span>Profile</span>
+        </button>
+    </nav>
+  </body>
+</html>

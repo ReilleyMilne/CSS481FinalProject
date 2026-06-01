@@ -1,0 +1,114 @@
+let showingLogin = true;
+
+function showError(message) {
+    const error = document.getElementById("auth-error");
+    error.textContent = message;
+    error.classList.remove("hidden");
+}
+
+function hideError() {
+    document.getElementById("auth-error").classList.add("hidden");
+}
+
+function showRegister() {
+    hideError();
+
+    document.getElementById("login-form").classList.add("hidden");
+    document.getElementById("register-form").classList.remove("hidden");
+
+    showingLogin = false;
+}
+
+function showLogin() {
+    hideError();
+
+    document.getElementById("register-form").classList.add("hidden");
+    document.getElementById("login-form").classList.remove("hidden");
+
+    showingLogin = true;
+}
+
+async function loginUser() {
+    hideError();
+
+    const email = document.getElementById("login-email").value.trim();
+    const password = document.getElementById("login-password").value;
+
+    if (!email || !password) {
+        showError("Please fill in all fields");
+        return;
+    }
+
+    const button = document.getElementById("login-btn");
+
+    button.disabled = true;
+    button.textContent = "Loading...";
+
+    try {
+        await login(email, password);
+
+        const user = await getMe();
+        saveUser(user);
+
+        const pets = await getMyPets();
+
+        if (pets && pets.length > 0) {
+            saveActivePet(pets[0]);
+            window.location.href = "discover.html";
+        } else {
+            window.location.href = "create-pet.html";
+        }
+
+    } catch (error) {
+        showError(error.message || "Login failed");
+    }
+
+    button.disabled = false;
+    button.textContent = "Sign In";
+}
+
+async function registerUser() {
+    hideError();
+
+    const firstName = document.getElementById("reg-firstname").value.trim();
+    const lastName = document.getElementById("reg-lastname").value.trim();
+    const email = document.getElementById("reg-email").value.trim();
+    const password = document.getElementById("reg-password").value;
+
+    if (!firstName || !lastName || !email || !password) {
+        showError("Please fill in all fields");
+        return;
+    }
+
+    const button = document.getElementById("register-btn");
+
+    button.disabled = true;
+    button.textContent = "Loading...";
+
+    try {
+        await register(email, password, firstName, lastName);
+
+        await login(email, password);
+
+        const user = await getMe();
+
+        saveUser(user);
+
+        window.location.href = "create-pet.html";
+
+    } catch (error) {
+        showError(error.message || "Registration failed");
+    }
+
+    button.disabled = false;
+    button.textContent = "Create Account";
+}
+
+function setupAuthPage() {
+    if (getToken() && getActivePet()) {
+        window.location.href = "discover.html";
+        return;
+    }
+}
+
+setupAuthPage();

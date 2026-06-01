@@ -1,0 +1,57 @@
+body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+
+.onboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  flex-shrink: 0;
+}
+
+.step-dots { display: flex; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #F0E4D0; }
+.dot.active { width: 24px; border-radius: 4px; background: #D4614A; }
+
+.onboard-step { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
+.onboard-step.active { display: flex; }
+
+.onboard-hero {
+  background: linear-gradient(160deg, #E87E66, #E8A838);
+  padding: 40px 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 160px;
+  flex-shrink: 0;
+}
+
+.hero-emoji { font-size: 72px; }
+
+.onboard-content {
+  background: #FDF6EE;
+  border-radius: 32px 32px 0 0;
+  margin-top: -24px;
+  padding: 28px 24px 32px;
+  flex: 1;
+}
+
+.onboard-content-full { padding: 24px 24px 40px; }
+.onboard-content h2 { font-size: 26px; font-weight: 700; color: #5C3D2E; margin-bottom: 20px; }
+
+.confirm-card {
+  background: white;
+  border-radius: 20px;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 16px 0;
+  box-shadow: 0 2px 8px rgba(92,61,46,0.08);
+  border: 1px solid #F0E4D0;
+}
+
+.confirm-avatar { font-size: 40px; flex-shrink: 0; }
+.confirm-name { font-size: 20px; font-weight: 700; color: #5C3D2E; }
+.confirm-meta { font-size: 13px; color: #7A5C4A; margin-top: 2px; }
+.confirm-traits { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
+.confirm-trait { font-size: 11px; padding: 3px 8px; background: #F0E4D0; border-radius: 20px; color: #7A5C4A; }

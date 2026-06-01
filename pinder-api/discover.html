@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>Pinder - Discover</title>
+      <link rel="stylesheet" href="css/base.css" />
+      <link rel="stylesheet" href="css/discover.css" />
+      <script src="js/store.js" defer></script>
+      <script src="js/api.js" defer></script>
+      <script src="js/discover.js" defer></script>
+  </head>
+
+  <body class="auth-guard">
+    <header class="app-header">
+        <div style="width:36px"></div>
+        <div class="header-logo">Pinder</div>
+        <button class="icon-btn" onclick="goProfile()" title="Your profile">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </button>
+    </header>
+
+    <main class="app-main">
+        <div class="swipe-stack" id="swipe-stack"></div>
+
+        <div class="swipe-actions">
+            <button class="action-btn pass-btn" onclick="swipeLeft()" title="Pass">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <button class="action-btn super-btn" onclick="superLike()" title="Super like">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+            </button>
+            <button class="action-btn like-btn" onclick="swipeRight()" title="Like">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            </button>
+        </div>
+
+        <div class="empty-state hidden" id="empty-discover">
+            <h3>You've seen everyone!</h3>
+            <p>Check back later for new pets in your area.</p>
+            <button class="btn-primary" onclick="loadDiscoverQueue()">Refresh</button>
+        </div>
+    </main>
+
+    <nav class="bottom-nav">
+        <button class="nav-btn active">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Discover</span>
+        </button>
+        <button class="nav-btn" onclick="goMatches()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            <span>Matches</span>
+        </button>
+        <button class="nav-btn" onclick="goProfile()">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+            <span>Profile</span>
+        </button>
+    </nav>
+
+    <div id="match-popup" class="match-popup hidden">
+        <div class="match-popup-bg"></div>
+        <div class="match-popup-content">
+            <h2>It's a Match!</h2>
+            <p id="match-popup-text"></p>
+            <div class="match-avatars">
+                <div class="match-avatar" id="popup-avatar-1"></div>
+                <div class="match-avatar-divider"></div>
+                <div class="match-avatar" id="popup-avatar-2"></div>
+            </div>
+            <button class="btn-primary" onclick="openMatchChat()">Send a Message</button>
+            <button class="btn-ghost" onclick="closeMatchPopup()">Keep Swiping</button>
+        </div>
+    </div>
+  </body>
+</html>
