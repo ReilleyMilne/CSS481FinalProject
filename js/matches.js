@@ -155,7 +155,7 @@ function renderChatMessages(msgs) {
     container.scrollTop = container.scrollHeight;
 }
 
-async function sendMessage() {
+async function sendChatMessage() {
     const input = document.getElementById("chat-input");
     const text = input.value.trim();
 
@@ -173,7 +173,7 @@ async function sendMessage() {
 }
 
 function chatKeydown(e) {
-    if (e.key === "Enter") sendMessage();
+    if (e.key === "Enter") sendChatMessage();
 }
 
 function backToMatches() {
