@@ -126,95 +126,61 @@ function attachSwipeGesture(card, pet) {
     let curX = 0;
     let dragging = false;
 
+    const ac = new AbortController();
+    const sig = { signal: ac.signal };
+
     card.addEventListener("mousedown", e => {
         dragging = true;
         startX = e.clientX;
         card.style.transition = "none";
-    });
+    }, sig);
 
     card.addEventListener("touchstart", e => {
         dragging = true;
         startX = e.touches[0].clientX;
         card.style.transition = "none";
-    }, { passive: true });
+    }, { passive: true, signal: ac.signal });
 
     window.addEventListener("mousemove", e => {
         if (!dragging) return;
-
         curX = e.clientX - startX;
         card.style.transform = `translateX(${curX}px) rotate(${curX * 0.07}deg)`;
-
         const likeEl = card.querySelector(".swipe-indicator.like");
         const nopeEl = card.querySelector(".swipe-indicator.nope");
         const ratio = Math.abs(curX) / 100;
-
-        if (curX > 20) {
-            likeEl.style.opacity = Math.min(ratio, 1);
-            nopeEl.style.opacity = 0;
-        } else if (curX < -20) {
-            nopeEl.style.opacity = Math.min(ratio, 1);
-            likeEl.style.opacity = 0;
-        } else {
-            likeEl.style.opacity = 0;
-            nopeEl.style.opacity = 0;
-        }
-    });
+        if (curX > 20) { likeEl.style.opacity = Math.min(ratio, 1); nopeEl.style.opacity = 0; }
+        else if (curX < -20) { nopeEl.style.opacity = Math.min(ratio, 1); likeEl.style.opacity = 0; }
+        else { likeEl.style.opacity = 0; nopeEl.style.opacity = 0; }
+    }, sig);
 
     window.addEventListener("touchmove", e => {
         if (!dragging) return;
-
         curX = e.touches[0].clientX - startX;
         card.style.transform = `translateX(${curX}px) rotate(${curX * 0.07}deg)`;
-
         const likeEl = card.querySelector(".swipe-indicator.like");
         const nopeEl = card.querySelector(".swipe-indicator.nope");
         const ratio = Math.abs(curX) / 100;
+        if (curX > 20) { likeEl.style.opacity = Math.min(ratio, 1); nopeEl.style.opacity = 0; }
+        else if (curX < -20) { nopeEl.style.opacity = Math.min(ratio, 1); likeEl.style.opacity = 0; }
+        else { likeEl.style.opacity = 0; nopeEl.style.opacity = 0; }
+    }, { passive: true, signal: ac.signal });
 
-        if (curX > 20) {
-            likeEl.style.opacity = Math.min(ratio, 1);
-            nopeEl.style.opacity = 0;
-        } else if (curX < -20) {
-            nopeEl.style.opacity = Math.min(ratio, 1);
-            likeEl.style.opacity = 0;
-        } else {
-            likeEl.style.opacity = 0;
-            nopeEl.style.opacity = 0;
-        }
-    }, { passive: true });
-
-    window.addEventListener("mouseup", () => {
+    const finishSwipe = () => {
         if (!dragging) return;
         dragging = false;
         card.style.transition = "";
-
-        if (curX > 80) {
-            doSwipeRight(card, pet);
-        } else if (curX < -80) {
-            doSwipeLeft(card);
-        } else {
+        ac.abort(); // remove all listeners
+        if (curX > 80) doSwipeRight(card, pet);
+        else if (curX < -80) doSwipeLeft(card);
+        else {
             card.style.transform = "";
             card.querySelectorAll(".swipe-indicator").forEach(i => i.style.opacity = 0);
         }
-
         curX = 0;
-    });
+    };
 
-    window.addEventListener("touchend", () => {
-        if (!dragging) return;
-        dragging = false;
-        card.style.transition = "";
-
-        if (curX > 80) {
-            doSwipeRight(card, pet);
-        } else if (curX < -80) {
-            doSwipeLeft(card);
-        } else {
-            card.style.transform = "";
-            card.querySelectorAll(".swipe-indicator").forEach(i => i.style.opacity = 0);
-        }
-
-        curX = 0;
-    });
+    window.addEventListener("mouseup", finishSwipe, sig);
+    window.addEventListener("touchend", finishSwipe, sig);
 }
 
 async function doSwipeRight(card, pet) {
@@ -228,7 +194,7 @@ async function doSwipeRight(card, pet) {
                 const result = await likePet(activePet.id, pet.id);
 
                 if (result && result.matched) {
-                    showMatchPopup(pet, result.match_id);
+                    showMatchPopup(pet, result.match.id);
                 }
             } catch (err) {
                 console.warn("like failed:", err.message);

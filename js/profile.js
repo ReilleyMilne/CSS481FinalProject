@@ -51,7 +51,7 @@ function renderProfile() {
         tagsEl.innerHTML = "";
 
         petTags.forEach(t => {
-            tagsEl.innerHTML += `<span class="pet-tag-badge">${t.title}</span>`;
+            tagsEl.innerHTML += `<span class="pet-tag-badge">${t.title} <button onclick="removeTag('${t.id}')" style="background:none;border:none;cursor:pointer;margin-left:4px;color:var(--text-muted)">✕</button></span>`;
         });
     } else {
         tagsEl.innerHTML = '<span style="color:var(--text-muted);font-size:13px">No tags yet</span>';
@@ -109,8 +109,8 @@ async function saveEdit() {
         name: document.getElementById("edit-name").value.trim() || null,
         species: document.getElementById("edit-species").value.trim() || null,
         breed: document.getElementById("edit-breed").value.trim() || null,
-        age: document.getElementById("edit-age").value || null,
-        weight: document.getElementById("edit-weight").value || null,
+        age: document.getElementById("edit-age").value ? parseFloat(document.getElementById("edit-age").value) : null,
+weight: document.getElementById("edit-weight").value ? parseFloat(document.getElementById("edit-weight").value) : null,
         gender: document.getElementById("edit-gender").value || null,
         bio: document.getElementById("edit-bio").value.trim() || null,
         favorite_activity: document.getElementById("edit-activity").value.trim() || null,

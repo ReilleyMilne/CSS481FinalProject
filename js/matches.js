@@ -144,10 +144,13 @@ function renderChatMessages(msgs) {
 
         const bubble = document.createElement("div");
         bubble.className = `message-bubble ${isMe ? "outgoing" : "incoming"}`;
-        bubble.innerHTML = `
-            ${msg.content}
-            <div class="message-time">${formatTime(msg.created_at)}</div>
-        `;
+        const text = document.createElement("span");
+        text.textContent = msg.content;
+        const time = document.createElement("div");
+        time.className = "message-time";
+        time.textContent = formatTime(msg.created_at);
+        bubble.appendChild(text);
+        bubble.appendChild(time);
 
         container.appendChild(bubble);
     });

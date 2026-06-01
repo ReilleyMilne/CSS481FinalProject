@@ -13,13 +13,6 @@ function clearToken() {
 }
 
 async function register(email, password, firstName, lastName) {
-    const body = {
-        email: email,
-        password: password,
-        first_name: firstName,
-        last_name: lastName
-    };
-
     const response = await fetch(API_URL + "/auth/register", {
         method: "POST",
         headers: {
@@ -82,11 +75,6 @@ async function logout() {
 async function getMe() {
     const token = getToken();
 
-    console.log("Token exists:", !!token);
-    console.log("Token prefix:", token?.substring(0, 20));
-
-    console.log("TOKEN:", token);
-
     const response = await fetch(API_URL + "/users/me", {
         method: "GET",
         headers: {
@@ -94,12 +82,7 @@ async function getMe() {
         }
     });
 
-    console.log("STATUS:", response.status);
-
     const text = await response.text();
-
-    console.log("BODY:", text);
-
     return JSON.parse(text);
 }
 
@@ -127,9 +110,6 @@ async function getMyPets() {
 
 async function createPet(petData) {
     const token = getToken();
-
-    console.log("TOKEN:", token);
-
     const response = await fetch(API_URL + "/pets", {
         method: "POST",
         headers: {
@@ -139,11 +119,7 @@ async function createPet(petData) {
         body: JSON.stringify(petData)
     });
 
-    console.log("STATUS:", response.status);
-
     const data = await response.json();
-
-    console.log("BODY:", data);
 
     if (!response.ok) {
         throw new Error(data.detail || "Could not create pet");

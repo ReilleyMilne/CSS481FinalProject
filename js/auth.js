@@ -105,8 +105,8 @@ async function registerUser() {
 }
 
 function setupAuthPage() {
-    if (getToken() && getActivePet()) {
-        window.location.href = "discover.html";
+    if (getToken()) {
+        window.location.href = getActivePet() ? "discover.html" : "create-pet.html";
         return;
     }
 }
