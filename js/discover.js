@@ -76,11 +76,11 @@ function renderDiscoverStack() {
     empty.classList.add("hidden");
     actions.style.display = "";
 
-    [...visible].reverse().forEach(pet => {
+    visible.forEach(pet => {
         stack.appendChild(buildPetCard(pet));
     });
 
-    attachSwipeGesture(stack.lastElementChild, visible[0]);
+    attachSwipeGesture(stack.firstElementChild, visible[0]);
 }
 
 function buildPetCard(pet) {
@@ -228,7 +228,7 @@ function removeTopCard() {
 
 function swipeLeft() {
     const stack = document.getElementById("swipe-stack");
-    const top = stack.lastElementChild;
+    const top = stack.firstElementChild;
 
     if (!top || !top.classList.contains("pet-card")) return;
 
@@ -237,7 +237,7 @@ function swipeLeft() {
 
 function swipeRight() {
     const stack = document.getElementById("swipe-stack");
-    const top = stack.lastElementChild;
+    const top = stack.firstElementChild;
 
     if (!top || !top.classList.contains("pet-card")) return;
 
