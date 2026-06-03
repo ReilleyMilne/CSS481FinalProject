@@ -13,7 +13,7 @@
 
   <body class="auth-guard">
     <header class="app-header">
-        <div style="width:36px"></div>
+        <div class="header-spacer"></div>
         <div class="header-logo">Pinder</div>
         <button class="icon-btn" onclick="goProfile()" title="Your profile">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
@@ -38,7 +38,7 @@
         <div class="empty-state hidden" id="empty-discover">
             <h3>You've seen everyone!</h3>
             <p>Check back later for new pets in your area.</p>
-            <button class="btn-primary" onclick="loadDiscoverQueue()">Refresh</button>
+            <button class="btn-primary" onclick="loadPets()">Refresh</button>
         </div>
     </main>
 
@@ -67,8 +67,8 @@
                 <div class="match-avatar-divider"></div>
                 <div class="match-avatar" id="popup-avatar-2"></div>
             </div>
-            <button class="btn-primary" onclick="openMatchChat()">Send a Message</button>
-            <button class="btn-ghost" onclick="closeMatchPopup()">Keep Swiping</button>
+            <button class="btn-primary" onclick="goChat()">Send a Message</button>
+            <button class="btn-ghost" onclick="closeMatch()">Keep Swiping</button>
         </div>
     </div>
   </body>

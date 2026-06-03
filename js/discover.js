@@ -3,13 +3,33 @@ let petImages = {};
 let petTags = {};
 let activePet = null;
 
-function showToast(msg) {
-    let el = document.getElementById("pinder-toast");
+function seenKey() {
+    return activePet ? `pinder_seen_${activePet.id}` : null;
+}
+
+function getSeenIds() {
+    const key = seenKey();
+    if (!key) return new Set();
+    try { return new Set(JSON.parse(localStorage.getItem(key) || "[]")); }
+    catch (_) { return new Set(); }
+}
+
+function markSeen(petId) {
+    const key = seenKey();
+    if (!key) return;
+    const seen = getSeenIds();
+    seen.add(petId);
+    const arr = [...seen].slice(-500);
+    try { localStorage.setItem(key, JSON.stringify(arr)); } catch (_) {}
+}
+
+function notify(msg) {
+    let el = document.getElementById("app-notification");
 
     if (!el) {
         el = document.createElement("div");
-        el.id = "pinder-toast";
-        el.className = "toast";
+        el.id = "app-notification";
+        el.className = "notification";
         document.body.appendChild(el);
     }
 
@@ -19,11 +39,11 @@ function showToast(msg) {
     setTimeout(() => el.classList.remove("show"), 2600);
 }
 
-function getSpeciesEmoji(species) {
+function speciesIcon(species) {
     return (species || "Pet").charAt(0).toUpperCase();
 }
 
-async function loadDiscoverQueue() {
+async function loadPets() {
     const stack = document.getElementById("swipe-stack");
 
     stack.innerHTML = '<div class="loading-card"><div class="loading-spinner"></div><p>Finding pets near you…</p></div>';
@@ -32,7 +52,12 @@ async function loadDiscoverQueue() {
 
     try {
         const pets = await discoverPets(20);
-        discoverQueue = pets || [];
+        const seen = getSeenIds();
+        discoverQueue = (pets || []).filter(p => {
+            if (seen.has(p.id)) return false;
+            if (activePet && String(p.id) === String(activePet.id)) return false;
+            return true;
+        });
 
         const first3 = discoverQueue.slice(0, 3);
 
@@ -52,13 +77,13 @@ async function loadDiscoverQueue() {
             }
         }
 
-        renderDiscoverStack();
+        refreshStack();
     } catch (err) {
-        stack.innerHTML = `<div class="loading-card"><p style="color:var(--terracotta)"> ${err.message}</p><button class="btn-primary" style="margin-top:16px;width:auto;padding:10px 24px" onclick="loadDiscoverQueue()">Try Again</button></div>`;
+        stack.innerHTML = `<div class="loading-card"><p style="color:var(--terracotta)"> ${err.message}</p><button class="btn-primary" style="margin-top:16px;width:auto;padding:10px 24px" onclick="loadPets()">Try Again</button></div>`;
     }
 }
 
-function renderDiscoverStack() {
+function refreshStack() {
     const stack = document.getElementById("swipe-stack");
     const empty = document.getElementById("empty-discover");
     const actions = document.querySelector(".swipe-actions");
@@ -77,18 +102,18 @@ function renderDiscoverStack() {
     actions.style.display = "";
 
     visible.forEach(pet => {
-        stack.appendChild(buildPetCard(pet));
+        stack.appendChild(createCard(pet));
     });
 
-    attachSwipeGesture(stack.firstElementChild, visible[0]);
+    enableSwipe(stack.firstElementChild, visible[0]);
 }
 
-function buildPetCard(pet) {
+function createCard(pet) {
     const card = document.createElement("div");
     card.className = "pet-card";
     card.dataset.petId = pet.id;
 
-    const emoji = getSpeciesEmoji(pet.species);
+    const emoji = speciesIcon(pet.species);
     const images = petImages[pet.id] || [];
     const tags = petTags[pet.id] || [];
     const bgImg = images[0]
@@ -121,7 +146,7 @@ function buildPetCard(pet) {
     return card;
 }
 
-function attachSwipeGesture(card, pet) {
+function enableSwipe(card, pet) {
     let startX = 0;
     let curX = 0;
     let dragging = false;
@@ -166,12 +191,15 @@ function attachSwipeGesture(card, pet) {
     }, { passive: true, signal: ac.signal });
 
     const finishSwipe = () => {
-        if (!dragging) return;
+        if (!dragging)
+        {
+            return;
+        }
         dragging = false;
         card.style.transition = "";
-        ac.abort(); // remove all listeners
-        if (curX > 80) doSwipeRight(card, pet);
-        else if (curX < -80) doSwipeLeft(card);
+        ac.abort();
+        if (curX > 80) swipeAccept(card, pet);
+        else if (curX < -80) swipeReject(card, pet);
         else {
             card.style.transform = "";
             card.querySelectorAll(".swipe-indicator").forEach(i => i.style.opacity = 0);
@@ -183,32 +211,30 @@ function attachSwipeGesture(card, pet) {
     window.addEventListener("touchend", finishSwipe, sig);
 }
 
-async function doSwipeRight(card, pet) {
+async function swipeAccept(card, pet) {
     card.classList.add("fly-right");
+    markSeen(pet.id);
+    setTimeout(() => advanceStack(), 380);
 
-    setTimeout(async () => {
-        removeTopCard();
-
-        if (activePet) {
-            try {
-                const result = await likePet(activePet.id, pet.id);
-
-                if (result && result.matched) {
-                    showMatchPopup(pet, result.match.id);
-                }
-            } catch (err) {
-                console.warn("like failed:", err.message);
+    if (activePet && String(pet.id) !== String(activePet.id)) {
+        try {
+            const result = await likePet(activePet.id, pet.id);
+            if (result && result.matched) {
+                showMatch(pet, result.match.id);
             }
+        } catch (err) {
+            console.warn("like failed:", err.message);
         }
-    }, 380);
+    }
 }
 
-function doSwipeLeft(card) {
+function swipeReject(card, pet) {
+    if (pet) markSeen(pet.id);
     card.classList.add("fly-left");
-    setTimeout(() => removeTopCard(), 380);
+    setTimeout(() => advanceStack(), 380);
 }
 
-function removeTopCard() {
+function advanceStack() {
     discoverQueue.shift();
 
     const next = discoverQueue[2];
@@ -223,7 +249,7 @@ function removeTopCard() {
         }).catch(() => {});
     }
 
-    renderDiscoverStack();
+    setTimeout(() => refreshStack(), 300);
 }
 
 function swipeLeft() {
@@ -232,7 +258,7 @@ function swipeLeft() {
 
     if (!top || !top.classList.contains("pet-card")) return;
 
-    doSwipeLeft(top);
+    swipeReject(top, discoverQueue[0]);
 }
 
 function swipeRight() {
@@ -241,34 +267,34 @@ function swipeRight() {
 
     if (!top || !top.classList.contains("pet-card")) return;
 
-    doSwipeRight(top, discoverQueue[0]);
+    swipeAccept(top, discoverQueue[0]);
 }
 
 function superLike() {
-    showToast("Super liked!");
+    notify("Super liked!");
     swipeRight();
 }
 
-function showMatchPopup(matchedPet, matchId) {
+function showMatch(matchedPet, matchId) {
     const popup = document.getElementById("match-popup");
 
     document.getElementById("match-popup-text").textContent =
         `${activePet?.name || "Your pet"} and ${matchedPet.name} both liked each other!`;
 
-    document.getElementById("popup-avatar-1").textContent = getSpeciesEmoji(activePet?.species || "");
-    document.getElementById("popup-avatar-2").textContent = getSpeciesEmoji(matchedPet.species);
+    document.getElementById("popup-avatar-1").textContent = speciesIcon(activePet?.species || "");
+    document.getElementById("popup-avatar-2").textContent = speciesIcon(matchedPet.species);
 
     sessionStorage.setItem("pinder_open_chat", matchId);
 
     popup.classList.remove("hidden");
 }
 
-function closeMatchPopup() {
+function closeMatch() {
     document.getElementById("match-popup").classList.add("hidden");
     sessionStorage.removeItem("pinder_open_chat");
 }
 
-function openMatchChat() {
+function goChat() {
     window.location.href = "matches.html";
 }
 
@@ -280,23 +306,28 @@ function goProfile() {
     window.location.href = "profile.html";
 }
 
-async function setupDiscoverPage() {
+async function init() {
     if (!getToken()) {
         window.location.href = "index.html";
         return;
     }
 
     document.body.classList.remove("auth-guard");
-    activePet = getActivePet();
+    activePet = getSavedPet();
 
-    if (activePet) {
-        try {
-            activePet = await getPet(activePet.id);
-            saveActivePet(activePet);
-        } catch (e) {}
+    if (!activePet) {
+        window.location.href = "create-pet.html";
+        return;
     }
 
-    await loadDiscoverQueue();
+    sessionStorage.removeItem("pinder_open_chat");
+
+    try {
+        activePet = await getPet(activePet.id);
+        savePet(activePet);
+    } catch (e) {}
+
+    await loadPets();
 }
 
-setupDiscoverPage();
+init();

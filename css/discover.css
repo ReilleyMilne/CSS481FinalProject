@@ -243,15 +243,15 @@ body
 
 .pet-card.fly-left
 {
-  transition: transform 0.4s ease, opacity 0.4s ease !important;
-  transform: translateX(-150%) rotate(-20deg) !important;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  transform: translateX(-150%) rotate(-20deg);
   opacity: 0;
 }
 
 .pet-card.fly-right
 {
-  transition: transform 0.4s ease, opacity 0.4s ease !important;
-  transform: translateX(150%) rotate(20deg) !important;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+  transform: translateX(150%) rotate(20deg);
   opacity: 0;
 }
 
@@ -259,7 +259,7 @@ body
 {
   position: fixed;
   inset: 0;
-  z-index: 200;
+  z-index: 20;
   display: flex;
   align-items: center;
   justify-content: center;

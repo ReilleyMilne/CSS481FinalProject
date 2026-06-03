@@ -1,6 +1,13 @@
-body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+body
+{
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
 
-.onboard-header {
+.onboard-header
+{
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -8,14 +15,42 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
   flex-shrink: 0;
 }
 
-.step-dots { display: flex; gap: 6px; }
-.dot { width: 8px; height: 8px; border-radius: 50%; background: #F0E4D0; }
-.dot.active { width: 24px; border-radius: 4px; background: #D4614A; }
+.step-dots
+{
+  display: flex;
+  gap: 6px;
+}
 
-.onboard-step { display: none; flex: 1; flex-direction: column; overflow-y: auto; }
-.onboard-step.active { display: flex; }
+.dot
+{
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #F0E4D0;
+}
 
-.onboard-hero {
+.dot.active
+{
+  width: 24px;
+  border-radius: 4px;
+  background: #D4614A;
+}
+
+.onboard-step
+{
+  display: none;
+  flex: 1;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.onboard-step.active
+{
+  display: flex;
+}
+
+.onboard-hero
+{
   background: linear-gradient(160deg, #E87E66, #E8A838);
   padding: 40px 20px;
   display: flex;
@@ -25,9 +60,13 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
   flex-shrink: 0;
 }
 
-.hero-emoji { font-size: 72px; }
+.hero-emoji
+{
+  font-size: 72px;
+}
 
-.onboard-content {
+.onboard-content
+{
   background: #FDF6EE;
   border-radius: 32px 32px 0 0;
   margin-top: -24px;
@@ -35,10 +74,21 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
   flex: 1;
 }
 
-.onboard-content-full { padding: 24px 24px 40px; }
-.onboard-content h2 { font-size: 26px; font-weight: 700; color: #5C3D2E; margin-bottom: 20px; }
+.onboard-content-full
+{
+  padding: 24px 24px 40px;
+}
 
-.confirm-card {
+.onboard-content h2
+{
+  font-size: 26px;
+  font-weight: 700;
+  color: #5C3D2E;
+  margin-bottom: 20px;
+}
+
+.confirm-card
+{
   background: white;
   border-radius: 20px;
   padding: 18px;
@@ -50,8 +100,122 @@ body { display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
   border: 1px solid #F0E4D0;
 }
 
-.confirm-avatar { font-size: 40px; flex-shrink: 0; }
-.confirm-name { font-size: 20px; font-weight: 700; color: #5C3D2E; }
-.confirm-meta { font-size: 13px; color: #7A5C4A; margin-top: 2px; }
-.confirm-traits { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 8px; }
-.confirm-trait { font-size: 11px; padding: 3px 8px; background: #F0E4D0; border-radius: 20px; color: #7A5C4A; }
+.confirm-avatar
+{
+  font-size: 40px;
+  flex-shrink: 0;
+}
+
+.confirm-name
+{
+  font-size: 20px;
+  font-weight: 700;
+  color: #5C3D2E;
+}
+
+.confirm-meta
+{
+  font-size: 13px;
+  color: #7A5C4A;
+  margin-top: 2px;
+}
+
+.confirm-traits
+{
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+.confirm-trait
+{
+  font-size: 11px;
+  padding: 3px 8px;
+  background: #F0E4D0;
+  border-radius: 20px;
+  color: #7A5C4A;
+}
+
+.photo-upload-zone
+{
+  position: relative;
+  width: 100%;
+  height: 130px;
+  border: 2px dashed #F0E4D0;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  background: #FDF6EE;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.photo-upload-zone:hover
+{
+  border-color: #D4614A;
+  background: #fef6f4;
+}
+
+.photo-upload-zone.dragover
+{
+  border-color: #D4614A;
+  background: #fef6f4;
+}
+
+.photo-upload-placeholder
+{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  color: #A08878;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.photo-upload-preview
+{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.photo-upload-clear
+{
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 26px;
+  height: 26px;
+  background: rgba(44,26,14,0.65);
+  color: white;
+  border: none;
+  border-radius: 50%;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.photo-upload-clear:hover
+{
+  background: #D4614A;
+}
+
+.confirm-subtitle
+{
+  color: #A08878;
+  font-size: 14px;
+  margin-bottom: 20px;
+}
+
+.upload-icon
+{
+  flex-shrink: 0;
+}

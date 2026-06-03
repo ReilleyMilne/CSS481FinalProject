@@ -1,4 +1,4 @@
-let showingLogin = true;
+let onLoginView = true;
 
 function showError(message) {
     const error = document.getElementById("auth-error");
@@ -6,30 +6,30 @@ function showError(message) {
     error.classList.remove("hidden");
 }
 
-function hideError() {
+function clearError() {
     document.getElementById("auth-error").classList.add("hidden");
 }
 
 function showRegister() {
-    hideError();
+    clearError();
 
     document.getElementById("login-form").classList.add("hidden");
     document.getElementById("register-form").classList.remove("hidden");
 
-    showingLogin = false;
+    onLoginView = false;
 }
 
 function showLogin() {
-    hideError();
+    clearError();
 
     document.getElementById("register-form").classList.add("hidden");
     document.getElementById("login-form").classList.remove("hidden");
 
-    showingLogin = true;
+    onLoginView = true;
 }
 
-async function loginUser() {
-    hideError();
+async function submitLogin() {
+    clearError();
 
     const email = document.getElementById("login-email").value.trim();
     const password = document.getElementById("login-password").value;
@@ -53,7 +53,7 @@ async function loginUser() {
         const pets = await getMyPets();
 
         if (pets && pets.length > 0) {
-            saveActivePet(pets[0]);
+            savePet(pets[0]);
             window.location.href = "discover.html";
         } else {
             window.location.href = "create-pet.html";
@@ -61,14 +61,13 @@ async function loginUser() {
 
     } catch (error) {
         showError(error.message || "Login failed");
+        button.disabled = false;
+        button.textContent = "Sign In";
     }
-
-    button.disabled = false;
-    button.textContent = "Sign In";
 }
 
-async function registerUser() {
-    hideError();
+async function submitRegister() {
+    clearError();
 
     const firstName = document.getElementById("reg-firstname").value.trim();
     const lastName = document.getElementById("reg-lastname").value.trim();
@@ -98,17 +97,21 @@ async function registerUser() {
 
     } catch (error) {
         showError(error.message || "Registration failed");
+        button.disabled = false;
+        button.textContent = "Create Account";
     }
-
-    button.disabled = false;
-    button.textContent = "Create Account";
 }
 
-function setupAuthPage() {
+async function init() {
     if (getToken()) {
-        window.location.href = getActivePet() ? "discover.html" : "create-pet.html";
-        return;
+        try {
+            await getMe();
+            window.location.href = getSavedPet() ? "discover.html" : "create-pet.html";
+        } catch (e) {
+            clearToken();
+            clearStorage();
+        }
     }
 }
 
-setupAuthPage();
+init();

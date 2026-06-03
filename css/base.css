@@ -202,7 +202,7 @@ body.auth-guard { display: none; }
   margin-bottom: 12px;
 }
 
-.toast {
+.notification {
   position: fixed;
   bottom: 90px;
   left: 50%;
@@ -214,14 +214,14 @@ body.auth-guard { display: none; }
   font-size: 13px;
   font-weight: 500;
   box-shadow: 0 8px 24px rgba(92,61,46,0.14);
-  z-index: 999;
+  z-index: 30;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
   white-space: nowrap;
 }
 
-.toast.show { opacity: 1; }
+.notification.show { opacity: 1; }
 
 .loading-spinner {
   width: 32px;
@@ -266,3 +266,8 @@ body.auth-guard { display: none; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #F0E4D0; border-radius: 2px; }
+
+.header-spacer { width: 36px; }
+.file-input-hidden { display: none; }
+.field-group--inline { margin: 0; flex: 1; }
+.add-row--mt { margin-top: 12px; }

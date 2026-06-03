@@ -13,13 +13,13 @@ function showError(message) {
     }, 4000);
 }
 
-function showToast(message) {
-    let toast = document.getElementById("pinder-toast");
+function notify(message) {
+    let toast = document.getElementById("app-notification");
 
     if (!toast) {
         toast = document.createElement("div");
-        toast.id = "pinder-toast";
-        toast.className = "toast";
+        toast.id = "app-notification";
+        toast.className = "notification";
         document.body.appendChild(toast);
     }
 
@@ -64,7 +64,7 @@ function changeStep(step) {
     document.getElementById("dot-" + step).classList.add("active");
 
     if (step === 3) {
-        updateSummary();
+        refreshSummary();
     }
 }
 
@@ -86,7 +86,7 @@ function toggleTrait(button) {
         selectedTraits = selectedTraits.filter(t => t !== trait);
     } else {
         if (selectedTraits.length >= 4) {
-            showToast("Maximum 4 traits");
+            notify("Maximum 4 traits");
             return;
         }
 
@@ -95,7 +95,7 @@ function toggleTrait(button) {
     }
 }
 
-function updateSummary() {
+function refreshSummary() {
     const name = document.getElementById("pet-name").value;
     const species = document.getElementById("pet-species").value;
     const breed = document.getElementById("pet-breed").value;
@@ -131,7 +131,7 @@ function updateSummary() {
     });
 }
 
-async function savePetProfile() {
+async function saveNewPet() {
     const button = document.getElementById("save-btn");
 
     button.disabled = true;
@@ -160,18 +160,18 @@ async function savePetProfile() {
             }
         }
 
-        const imageUrl =
-            document.getElementById("pet-image-url").value.trim();
+        const imageFile = window.pendingPhoto || null;
 
-        if (imageUrl) {
+        if (imageFile) {
             try {
-                await addPetImage(pet.id, imageUrl);
+                await addPetImage(pet.id, imageFile);
             } catch (e) {
             }
         }
 
-        saveActivePet(pet);
-        showToast("Profile created");
+        savePet(pet);
+        window.pendingPhoto = null;
+        notify("Profile created");
 
         setTimeout(() => {
             window.location.href = "discover.html";
@@ -186,16 +186,60 @@ async function savePetProfile() {
 }
 
 function skipPetCreation() {
+    removeSavedPet();
     window.location.href = "discover.html";
 }
 
-function setupCreatePetPage() {
+function onPhotoSelected(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    previewPhoto(file);
+}
+
+function previewPhoto(file) {
+    if (!file.type.startsWith("image/")) {
+        notify("Please select an image file.");
+        return;
+    }
+
+    window.pendingPhoto = file;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        document.getElementById("photo-upload-preview").src = e.target.result;
+        document.getElementById("photo-upload-preview").classList.remove("hidden");
+        document.getElementById("photo-upload-placeholder").classList.add("hidden");
+        document.getElementById("photo-upload-clear").classList.remove("hidden");
+    };
+    reader.readAsDataURL(file);
+}
+
+function removePhoto(event) {
+    event.stopPropagation();
+    window.pendingPhoto = null;
+    document.getElementById("photo-upload-preview").src = "";
+    document.getElementById("photo-upload-preview").classList.add("hidden");
+    document.getElementById("photo-upload-placeholder").classList.remove("hidden");
+    document.getElementById("photo-upload-clear").classList.add("hidden");
+    document.getElementById("pet-image-file").value = "";
+}
+
+function init() {
     if (!getToken()) {
         window.location.href = "index.html";
         return;
     }
 
     document.body.classList.remove("auth-guard");
+    const zone = document.getElementById("photo-upload-zone");
+    zone.addEventListener("dragover", e => { e.preventDefault(); zone.classList.add("dragover"); });
+    zone.addEventListener("dragleave", () => zone.classList.remove("dragover"));
+    zone.addEventListener("drop", e => {
+        e.preventDefault();
+        zone.classList.remove("dragover");
+        const file = e.dataTransfer.files[0];
+        if (file) previewPhoto(file);
+    });
+
     document.getElementById("gender-group").addEventListener("click", e => {
         const button = e.target.closest(".toggle-btn");
 
@@ -213,4 +257,4 @@ function setupCreatePetPage() {
     });
 }
 
-setupCreatePetPage();
+init();

@@ -3,13 +3,13 @@ let activeMatchId = null;
 let allMatches = [];
 let matchedPets = {};
 
-function showToast(msg) {
-    let el = document.getElementById("pinder-toast");
+function notify(msg) {
+    let el = document.getElementById("app-notification");
 
     if (!el) {
         el = document.createElement("div");
-        el.id = "pinder-toast";
-        el.className = "toast";
+        el.id = "app-notification";
+        el.className = "notification";
         document.body.appendChild(el);
     }
 
@@ -19,7 +19,7 @@ function showToast(msg) {
     setTimeout(() => el.classList.remove("show"), 2600);
 }
 
-function getSpeciesEmoji(species) {
+function speciesIcon(species) {
     return (species || "Pet").charAt(0).toUpperCase();
 }
 
@@ -27,7 +27,7 @@ function formatTime(dateStr) {
     return new Date(dateStr).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-function formatRelative(dateStr) {
+function timeAgo(dateStr) {
     const diff = Date.now() - new Date(dateStr).getTime();
 
     if (diff < 60000) return "just now";
@@ -39,7 +39,7 @@ function formatRelative(dateStr) {
 
 async function loadMatches() {
     if (!activePet) {
-        renderMatches([]);
+        refreshMatches([]);
         return;
     }
 
@@ -59,14 +59,14 @@ async function loadMatches() {
             }
         }
 
-        renderMatches(allMatches);
+        refreshMatches(allMatches);
     } catch (err) {
         document.getElementById("matches-list").innerHTML =
             `<div style="text-align:center;padding:32px;color:var(--terracotta)"> ${err.message}</div>`;
     }
 }
 
-function renderMatches(matches) {
+function refreshMatches(matches) {
     const list = document.getElementById("matches-list");
     const empty = document.getElementById("empty-matches");
     const countEl = document.getElementById("match-count");
@@ -85,18 +85,37 @@ function renderMatches(matches) {
 
     matches.forEach(match => {
         const other = matchedPets[match.id] || {};
-        const emoji = getSpeciesEmoji(other.species);
+        const emoji = speciesIcon(other.species);
 
-        list.innerHTML += `
-            <div class="match-item" onclick="openChat('${match.id}')">
-                <div class="match-item-avatar">${emoji}</div>
-                <div class="match-item-info">
-                    <div class="match-item-name">${other.name || "Unknown"}</div>
-                    <div class="match-item-preview">${other.species || ""}${other.breed ? " · " + other.breed : ""}</div>
-                </div>
-                <div class="match-item-meta">${formatRelative(match.created_at)}</div>
-            </div>
-        `;
+        const item = document.createElement("div");
+        item.className = "match-item";
+        item.addEventListener("click", () => openChat(match.id));
+
+        const avatar = document.createElement("div");
+        avatar.className = "match-item-avatar";
+        avatar.textContent = emoji;
+
+        const info = document.createElement("div");
+        info.className = "match-item-info";
+
+        const name = document.createElement("div");
+        name.className = "match-item-name";
+        name.textContent = other.name || "Unknown";
+
+        const preview = document.createElement("div");
+        preview.className = "match-item-preview";
+        preview.textContent = (other.species || "") + (other.breed ? " · " + other.breed : "");
+
+        const meta = document.createElement("div");
+        meta.className = "match-item-meta";
+        meta.textContent = timeAgo(match.created_at);
+
+        info.appendChild(name);
+        info.appendChild(preview);
+        item.appendChild(avatar);
+        item.appendChild(info);
+        item.appendChild(meta);
+        list.appendChild(item);
     });
 }
 
@@ -105,7 +124,7 @@ async function openChat(matchId) {
 
     const other = matchedPets[matchId] || {};
 
-    document.getElementById("chat-header-avatar").textContent = getSpeciesEmoji(other.species);
+    document.getElementById("chat-header-avatar").textContent = speciesIcon(other.species);
     document.getElementById("chat-header-name").textContent = other.name || "Unknown";
     document.getElementById("chat-header-sub").textContent =
         `${other.species || ""}${other.breed ? " · " + other.breed : ""}`;
@@ -113,23 +132,23 @@ async function openChat(matchId) {
     document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
     document.getElementById("view-chat").classList.add("active");
 
-    await loadChatMessages(matchId);
+    await loadMessages(matchId);
 }
 
-async function loadChatMessages(matchId) {
+async function loadMessages(matchId) {
     const container = document.getElementById("chat-messages");
 
     container.innerHTML = '<div style="text-align:center;padding:16px;color:var(--text-muted)">Loading messages…</div>';
 
     try {
         const msgs = await getMessages(matchId, 50);
-        renderChatMessages(msgs);
+        refreshMessages(msgs);
     } catch (err) {
         container.innerHTML = `<div style="text-align:center;padding:16px;color:var(--terracotta)"> ${err.message}</div>`;
     }
 }
 
-function renderChatMessages(msgs) {
+function refreshMessages(msgs) {
     const container = document.getElementById("chat-messages");
 
     container.innerHTML = "";
@@ -158,7 +177,7 @@ function renderChatMessages(msgs) {
     container.scrollTop = container.scrollHeight;
 }
 
-async function sendChatMessage() {
+async function submitMessage() {
     const input = document.getElementById("chat-input");
     const text = input.value.trim();
 
@@ -168,18 +187,18 @@ async function sendChatMessage() {
 
     try {
         await sendMessage(activeMatchId, activePet.id, text);
-        await loadChatMessages(activeMatchId);
+        await loadMessages(activeMatchId);
     } catch (err) {
-        showToast("Could not send: " + err.message);
+        notify("Could not send: " + err.message);
         input.value = text;
     }
 }
 
-function chatKeydown(e) {
-    if (e.key === "Enter") sendChatMessage();
+function onChatKey(e) {
+    if (e.key === "Enter") submitMessage();
 }
 
-function backToMatches() {
+function showMatchList() {
     activeMatchId = null;
 
     document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
@@ -190,34 +209,41 @@ function goDiscover() {
     window.location.href = "discover.html";
 }
 
-async function setupMatchesPage() {
+async function init() {
     if (!getToken()) {
         window.location.href = "index.html";
         return;
     }
 
     document.body.classList.remove("auth-guard");
-    activePet = getActivePet();
+    activePet = getSavedPet();
 
-    await loadMatches();
+    if (!activePet) {
+        window.location.href = "create-pet.html";
+        return;
+    }
+
+    try {
+        await loadMatches();
+    } catch (e) {
+        sessionStorage.removeItem("pinder_open_chat");
+    }
 
     const chatId = sessionStorage.getItem("pinder_open_chat");
 
     if (chatId) {
         sessionStorage.removeItem("pinder_open_chat");
 
-        const match = allMatches.find(m => m.id === chatId);
+        const match = allMatches.find(m => String(m.id) === String(chatId));
 
         if (match) {
             openChat(chatId);
-        } else {
-            document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
-            document.getElementById("view-matches").classList.add("active");
+            return;
         }
-    } else {
-        document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
-        document.getElementById("view-matches").classList.add("active");
     }
+
+    document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+    document.getElementById("view-matches").classList.add("active");
 }
 
-setupMatchesPage();
+init();

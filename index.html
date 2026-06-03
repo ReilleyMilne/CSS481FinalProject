@@ -36,7 +36,7 @@
                 <label for="login-password">Password</label>
                 <input type="password" id="login-password" placeholder="password" autocomplete="current-password" />
             </div>
-            <button id="login-btn" class="btn-primary" onclick="loginUser()">Sign In</button>
+            <button id="login-btn" class="btn-primary" onclick="submitLogin()">Sign In</button>
             <p class="auth-switch">New here? <a href="#" onclick="showRegister(); return false;">Create an account</a></p>
         </div>
 
@@ -60,7 +60,7 @@
                 <label for="reg-password">Password</label>
                 <input type="password" id="reg-password" placeholder="password" autocomplete="new-password" />
             </div>
-            <button id="register-btn" class="btn-primary" onclick="registerUser()">Create Account</button>
+            <button id="register-btn" class="btn-primary" onclick="submitRegister()">Create Account</button>
             <p class="auth-switch">Already have an account? <a href="#" onclick="showLogin(); return false;">Sign in</a></p>
         </div>
     </div>

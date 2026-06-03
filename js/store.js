@@ -15,11 +15,11 @@ function getUser() {
     return JSON.parse(user);
 }
 
-function saveActivePet(pet) {
+function savePet(pet) {
     localStorage.setItem(PET_KEY, JSON.stringify(pet));
 }
 
-function getActivePet() {
+function getSavedPet() {
     const pet = localStorage.getItem(PET_KEY);
 
     if (!pet) {
@@ -29,7 +29,7 @@ function getActivePet() {
     return JSON.parse(pet);
 }
 
-function removeActivePet() {
+function removeSavedPet() {
     localStorage.removeItem(PET_KEY);
 }
 
